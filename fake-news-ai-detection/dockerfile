@@ -1,0 +1,30 @@
+# -------- FRONTEND BUILD STAGE --------
+    FROM node:18 AS frontend
+
+    WORKDIR /app
+    COPY frontend/ /app
+    RUN npm install
+    RUN npm run build
+    
+    # -------- BACKEND (API) STAGE --------
+    FROM python:3.10-slim AS backend
+    
+    WORKDIR /app
+    
+    # Install dependencies
+    COPY requirements.txt .
+    RUN pip install --no-cache-dir -r requirements.txt
+    
+    # Copy backend files
+    COPY api/ ./api/
+    COPY models/ ./models/
+    
+    # Copy built frontend into Flask's static folder
+    COPY --from=frontend /app/build/ ./api/static/
+    
+    # Expose port 5000
+    EXPOSE 5000
+    
+    # Run Flask app
+    CMD ["python", "api/app.py"]
+    
