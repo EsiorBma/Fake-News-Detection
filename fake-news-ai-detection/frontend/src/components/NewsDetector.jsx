@@ -5,12 +5,13 @@ import './NewsDetector.css';
 const NewsDetector = () => {
   const [content, setContent] = useState('');
   const [result, setResult] = useState(null);
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
   const handleSubmit = async () => {
     if (!content) return;
 
     try {
-      const res = await axios.post('http://localhost:5000/predict', { content });
+      const res = await axios.post(`${API_URL}/predict`, { content });
       setResult(res.data.prediction);
     } catch (error) {
       console.error("Erreur lors de la prédiction :", error);
